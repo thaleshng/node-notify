@@ -1,0 +1,17 @@
+{
+    "smtp": {
+        "service": "gmail",
+        "user": "emailnode8@gmail.com"
+    },
+    "recipients": ["bereghs@gmail.com", "thaleshng@gmail.com"],
+    "templates": {
+        "create": {
+        "subject": "Novo Registro Criado",
+        "template": "<p>Um novo registro foi criado: <strong>{{nome}}</strong> ({{cpf}})</p>"
+        },
+        "delete": {
+        "subject": "Registro Deletado",
+        "template": "<p>O registro <strong>{{nome}}</strong> ({{cpf}}) foi removido.</p>"
+        }
+    }
+}

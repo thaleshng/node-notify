@@ -1,5 +1,8 @@
+const { registrarNotificacao } = require("./apiService")
+
 const nodemailer = require("nodemailer");
 const fs = require("fs");
+const striptags = require("striptags")
 
 const emailConfig = JSON.parse(fs.readFileSync(__dirname + "/../config/email_config.json", "utf-8"));
 
@@ -23,6 +26,8 @@ const sendEmail = async (action, data) => {
     }
 
     const htmlContent = renderTemplate(templateConfig.template, data);
+    const htmlPlainTextContent = striptags(htmlContent)
+
     const mailOptions = {
     from: `"Node Notify" <${emailConfig.smtp.user}>`,
     to: emailConfig.recipients,
@@ -30,7 +35,21 @@ const sendEmail = async (action, data) => {
     html: htmlContent,
     };
 
-    return transporter.sendMail(mailOptions);
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log(`✅ E-mail enviado para: ${emailConfig.recipients}`);
+
+        await registrarNotificacao({
+            tipo: "email",
+            conteudo: htmlPlainTextContent,
+            destinatarios: emailConfig.recipients,
+        });
+
+        console.log("✅ Notificação registrada na API Python!");
+    } catch (error) {
+        console.error("❌ Erro ao enviar email:", error.message);
+        throw error;
+    }
 };
 
 module.exports = { sendEmail };
